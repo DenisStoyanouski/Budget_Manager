@@ -11,16 +11,21 @@ public class BudgetManager {
 
     public static void start() {
         readRecords();
+        printBudget();
+        printTotal();
     }
 
     private static void readRecords() {
         while (scanner.hasNextLine()) {
             Record record = createRecord(getInput());
-            if (!record.item.isEmpty()) {
+            if (!record.item().isEmpty()) {
                 records.add(record);
             }
         }
-        printTotal();
+    }
+
+    private static void printBudget() {
+        records.forEach(record -> System.out.println(record.toString()));
     }
 
     private static Record createRecord(String input) {
@@ -36,7 +41,7 @@ public class BudgetManager {
     }
 
     private static String getBalance() {
-        return String.format("%.2f", records.stream().mapToDouble(record -> record.cost).sum());
+        return String.format("%.2f", records.stream().mapToDouble(Record::cost).sum());
     }
 
     private static String getCurrency() {
@@ -48,9 +53,7 @@ public class BudgetManager {
     }
 
     private static void printTotal() {
-        System.out.println("Total: " + getCurrency() + "" + getBalance());
+        System.out.println("\nTotal: " + getCurrency() + "" + getBalance());
     }
 
-    public record Record(String item, String currency, double cost) {
-    }
 }
