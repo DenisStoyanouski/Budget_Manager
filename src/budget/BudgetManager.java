@@ -11,10 +11,39 @@ public class BudgetManager {
     private final static String currency = "$";
     private final static List<Record> records = new ArrayList<>();
 
+    private static Double balance;
+
     public static void start() {
-        readRecords();
+        while (true) {
+            String menu = """
+                Choose your action:
+                1) Add income
+                2) Add purchase
+                3) Show list of purchases
+                4) Balance
+                0) Exit""";
+            switch(getInput()) {
+                case "1" -> addIncome();
+            }
+        }
+
+
+        /*readRecords();
         printBudget();
-        printTotal();
+        printTotal();*/
+    }
+
+    private static void addIncome() {
+        System.out.println("Enter income:");
+        try {
+            balance += Double.parseDouble(getInput());
+            System.out.println("Income was added!");
+        } catch (NullPointerException|NumberFormatException e) {
+            System.out.println("Wrong format. Use numbers!");
+            addIncome();
+        }
+
+
     }
 
     private static void readRecords() {
