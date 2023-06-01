@@ -11,18 +11,19 @@ public class BudgetManager {
     private final static String currency = "$";
     private final static List<Record> records = new ArrayList<>();
 
-    private static Double balance;
+    private static Double balance = 0d;
 
     public static void start() {
         while (true) {
             String menu = """
-                Choose your action:
-                1) Add income
-                2) Add purchase
-                3) Show list of purchases
-                4) Balance
-                0) Exit""";
-            switch(getInput()) {
+                    Choose your action:
+                    1) Add income
+                    2) Add purchase
+                    3) Show list of purchases
+                    4) Balance
+                    0) Exit""";
+            System.out.println(menu);
+            switch (getInput()) {
                 case "1" -> addIncome();
                 case "2" -> addPurchase();
                 case "3" -> printListOfPurchases();
@@ -33,55 +34,49 @@ public class BudgetManager {
                 }
             }
         }
-
-
-        /*readRecords();
-
-        printTotal();*/
     }
 
     private static void addIncome() {
-        System.out.println("Enter income:");
+        System.out.println("\nEnter income:");
+        String income = getInput();
         try {
-            balance += Double.parseDouble(getInput());
-            System.out.println("Income was added!");
-        } catch (NullPointerException|NumberFormatException e) {
+            balance += Integer.parseInt(income);
+            System.out.println("Income was added!\n");
+        } catch (NullPointerException | NumberFormatException e) {
+            System.out.println(e.getMessage());
             System.out.println("Wrong format. Use numbers!");
             addIncome();
         }
     }
 
     private static void addPurchase() {
+        System.out.println("\nEnter purchase name:");
+        String purchaseName = getInput();
+        System.out.println("Enter its price:");
+        double price = Double.parseDouble(getInput());
+        Record record = new Record(purchaseName, currency, price);
+        records.add(record);
     }
 
     private static void printListOfPurchases() {
         printBudget();
+        printTotal();
     }
 
     private static void printBalance() {
-        System.out.printf(Locale.US, "%.2f\n", balance);
+        System.out.printf(Locale.US, "\nBalance: $%.2f\n\n", balance);
 
-    }
-
-    private static void readRecords() {
-        while (scanner.hasNextLine()) {
-            Record record = createRecord(getInput());
-            if (!record.item().isEmpty()) {
-                records.add(record);
-            }
-        }
     }
 
     private static void printBudget() {
-        try {
+        if (records.isEmpty()) {
+            System.out.println("\nThe purchase list is empty\n");
+        } else {
             records.forEach(record -> System.out.println(record.toString()));
-        } catch (NullPointerException e) {
-            System.out.println("The purchase list is empty");
         }
-
     }
 
-    private static Record createRecord(String input) {
+    /*private static Record createRecord(String input) {
         int currencyIndex = input.indexOf('$');
         try {
             String item = input.substring(0, currencyIndex).trim();
@@ -91,9 +86,9 @@ public class BudgetManager {
             System.out.println("Record: " + input + " has wrong currency format");
         }
         return new Record("", "", 0);
-    }
+    }*/
 
-    private static String getBalance() {
+    private static String getTotal() {
         return String.format(Locale.US, "%.2f", records.stream().mapToDouble(Record::cost).sum());
     }
 
@@ -106,7 +101,7 @@ public class BudgetManager {
     }
 
     private static void printTotal() {
-        System.out.printf(Locale.US, "\nTotal: " + getCurrency() + "" + getBalance() + "%n");
+        System.out.printf(Locale.US, "\nTotal sum: " + getCurrency() + "" + getTotal() + "%n");
     }
 
 }
