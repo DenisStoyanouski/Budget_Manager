@@ -24,6 +24,8 @@ public class BudgetManager {
                 0) Exit""";
             switch(getInput()) {
                 case "1" -> addIncome();
+                case "2" -> addPurchase();
+                case "4" -> printBalance();
             }
         }
 
@@ -42,7 +44,13 @@ public class BudgetManager {
             System.out.println("Wrong format. Use numbers!");
             addIncome();
         }
+    }
 
+    private static void addPurchase() {
+    }
+
+    private static void printBalance() {
+        System.out.printf(Locale.US, "%.2f\n", balance);
 
     }
 
