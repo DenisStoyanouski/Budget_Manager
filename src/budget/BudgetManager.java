@@ -29,7 +29,7 @@ public class BudgetManager {
                 case "3" -> printListOfPurchases();
                 case "4" -> printBalance();
                 case "0" -> {
-                    System.out.println("Bye!");
+                    System.out.println("\nBye!");
                     System.exit(0);
                 }
             }
@@ -56,11 +56,11 @@ public class BudgetManager {
         double price = Double.parseDouble(getInput());
         Record record = new Record(purchaseName, currency, price);
         records.add(record);
+        System.out.println("Purchase was added!\n");
     }
 
     private static void printListOfPurchases() {
         printBudget();
-        printTotal();
     }
 
     private static void printBalance() {
@@ -73,6 +73,7 @@ public class BudgetManager {
             System.out.println("\nThe purchase list is empty\n");
         } else {
             records.forEach(record -> System.out.println(record.toString()));
+            printTotal();
         }
     }
 
@@ -101,7 +102,7 @@ public class BudgetManager {
     }
 
     private static void printTotal() {
-        System.out.printf(Locale.US, "\nTotal sum: " + getCurrency() + "" + getTotal() + "%n");
+        System.out.printf(Locale.US, "Total sum: " + getCurrency() + "" + getTotal() + "%n%n");
     }
 
 }
