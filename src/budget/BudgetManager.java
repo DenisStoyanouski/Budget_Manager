@@ -25,13 +25,18 @@ public class BudgetManager {
             switch(getInput()) {
                 case "1" -> addIncome();
                 case "2" -> addPurchase();
+                case "3" -> printListOfPurchases();
                 case "4" -> printBalance();
+                case "0" -> {
+                    System.out.println("Bye!");
+                    System.exit(0);
+                }
             }
         }
 
 
         /*readRecords();
-        printBudget();
+
         printTotal();*/
     }
 
@@ -49,6 +54,10 @@ public class BudgetManager {
     private static void addPurchase() {
     }
 
+    private static void printListOfPurchases() {
+        printBudget();
+    }
+
     private static void printBalance() {
         System.out.printf(Locale.US, "%.2f\n", balance);
 
@@ -64,7 +73,12 @@ public class BudgetManager {
     }
 
     private static void printBudget() {
-        records.forEach(record -> System.out.println(record.toString()));
+        try {
+            records.forEach(record -> System.out.println(record.toString()));
+        } catch (NullPointerException e) {
+            System.out.println("The purchase list is empty");
+        }
+
     }
 
     private static Record createRecord(String input) {
