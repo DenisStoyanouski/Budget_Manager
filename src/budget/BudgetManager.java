@@ -1,7 +1,5 @@
 package budget;
 
-import org.w3c.dom.ls.LSOutput;
-
 import java.util.*;
 
 
@@ -9,7 +7,13 @@ public class BudgetManager {
     private final static Scanner scanner = new Scanner(System.in);
     private final static String currency = "$";
 
-    private final static String[] typeOfPurchase = {"", "Food", "Clothes", "Entertainment", "Other", "All"};
+    private enum MenuItems{
+        FOOD,
+        CLOTHES,
+        ENTERTAINMENT,
+        OTHER,
+        All
+    }
     private final static List<Record> records = new ArrayList<>();
 
     private static Double balance = 0d;
@@ -54,18 +58,11 @@ public class BudgetManager {
     private static void addPurchase() {
         boolean back = false;
         while (!back) {
-            String menu = """
-                Choose the type of purchase
-                1) Food
-                2) Clothes
-                3) Entertainment
-                4) Other
-                5) Back""";
-            System.out.println(menu);
+            printAddMenu();
             Record record = null;
             int item = Integer.parseInt(getInput().trim());
             switch (item) {
-                case 1, 2, 3, 4 -> record = createRecord(typeOfPurchase[item]);
+                case 1, 2, 3, 4 -> record = createRecord(MenuItems.values()[item - 1].name());
                 case 5 -> back = true;
                 default -> System.out.println("Enter number from menu!\n");
             }
@@ -75,6 +72,13 @@ public class BudgetManager {
                 changeBalance(record.cost());
             }
         }
+    }
+    private static void printAddMenu() {
+        System.out.println("\nChoose the type of purchase");
+        Arrays.stream(MenuItems.values())
+                .filter(value -> value.ordinal() != 4)
+                .forEach(value -> System.out.println((value.ordinal() + 1) + ") " + value.name()));
+        System.out.println("5) Back");
     }
 
     private static void changeBalance(double price) {
@@ -95,23 +99,22 @@ public class BudgetManager {
             System.out.println("\nThe purchase list is empty\n");
             return;
         }
-        while(!back) {
-            String menu = """
-                Choose the type of purchases
-                1) Food
-                2) Clothes
-                3) Entertainment
-                4) Other
-                5) All
-                6) Back""";
-            System.out.println("\n" + menu);
+        while (!back) {
+            printShowMenu();
             int item = Integer.parseInt(getInput().trim());
             switch (item) {
-                case 1, 2, 3, 4, 5 -> printListOfPurchases(typeOfPurchase[item]);
+                case 1, 2, 3, 4, 5 -> printListOfPurchases(MenuItems.values()[item - 1].name());
                 case 6 -> back = true;
                 default -> System.out.println("Enter number from menu!\n");
             }
         }
+    }
+
+    private static void printShowMenu() {
+        System.out.println("\nChoose the type of purchase");
+        Arrays.stream(MenuItems.values())
+                .forEach(value -> System.out.println((value.ordinal() + 1) + ") " + value.name()));
+        System.out.println("6) Back");
     }
 
     private static void printListOfPurchases(String typeOfPurchase) {
@@ -152,7 +155,7 @@ public class BudgetManager {
     }
 
     private static void printTotal(String typeOfPurchase) {
-        String total = "";
+        String total;
         if ("All".equals(typeOfPurchase)) {
             total = String.format(Locale.US, "%.2f", records.stream().mapToDouble(Record::cost).sum());
         } else {
