@@ -1,14 +1,15 @@
 package budget;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Scanner;
+import org.w3c.dom.ls.LSOutput;
+
+import java.util.*;
 
 
 public class BudgetManager {
     private final static Scanner scanner = new Scanner(System.in);
     private final static String currency = "$";
+
+    private final static String[] typeOfPurchase = {"", "Food", "Clothes", "Entertainment", "Other", "All"};
     private final static List<Record> records = new ArrayList<>();
 
     private static Double balance = 0d;
@@ -50,17 +51,36 @@ public class BudgetManager {
     }
 
     private static void addPurchase() {
-        System.out.println("\nEnter purchase name:");
-        String purchaseName = getInput();
-        System.out.println("Enter its price:");
-        double price = Double.parseDouble(getInput());
-        Record record = new Record(purchaseName, currency, price);
-        records.add(record);
-        System.out.println("Purchase was added!\n");
+        boolean back = false;
+        while (!back) {
+            String menu = """
+                Choose the type of purchase
+                1) Food
+                2) Clothes
+                3) Entertainment
+                4) Other
+                5) Back""";
+            System.out.println(menu);
+            Record record = null;
+            int item = Integer.parseInt(getInput().trim());
+            switch (item) {
+                case 1, 2, 3, 4 -> record = createRecord(typeOfPurchase[item]);
+                case 5 -> back = true;
+                default -> System.out.println("Enter number from menu!\n");
+            }
+            if (record != null) {
+                records.add(record);
+                System.out.println("Purchase was added!\n");
+                changeBalance(record.cost());
+            }
+        }
     }
 
-    private static void printListOfPurchases() {
-        printBudget();
+    private static void changeBalance(double price) {
+        balance -= price;
+        if (balance < 0) {
+            balance = 0d;
+        }
     }
 
     private static void printBalance() {
@@ -68,29 +88,46 @@ public class BudgetManager {
 
     }
 
-    private static void printBudget() {
-        if (records.isEmpty()) {
-            System.out.println("\nThe purchase list is empty\n");
-        } else {
-            records.forEach(record -> System.out.println(record.toString()));
-            printTotal();
+    private static void printListOfPurchases() {
+        boolean back = false;
+        while(!back) {
+            String menu = """
+                Choose the type of purchases
+                1) Food
+                2) Clothes
+                3) Entertainment
+                4) Other
+                5) All
+                6) Back""";
+            System.out.println(menu);
+            int item = Integer.parseInt(getInput().trim());
+            if (records.isEmpty()) {
+                System.out.println("\nThe purchase list is empty\n");
+                break;
+            }
+            switch (item) {
+                case 1, 2, 3, 4 -> {
+                    records.stream()
+                            .filter(record -> Objects.equals(record.typeOfPurchase(), typeOfPurchase[item]))
+                            .forEach(System.out::println);
+                    printTotal(typeOfPurchase[item]);
+                }
+                case 5 -> {
+                    records.forEach(record -> System.out.println(record.toString()));
+                    printTotal();
+                }
+                case 6 -> back = true;
+                default -> System.out.println("Enter number from menu!\n");
+            }
         }
     }
 
-    /*private static Record createRecord(String input) {
-        int currencyIndex = input.indexOf('$');
-        try {
-            String item = input.substring(0, currencyIndex).trim();
-            double cost = Double.parseDouble(input.substring(currencyIndex + 1).trim());
-            return new Record(item, currency, cost);
-        } catch (NumberFormatException e) {
-            System.out.println("Record: " + input + " has wrong currency format");
-        }
-        return new Record("", "", 0);
-    }*/
-
-    private static String getTotal() {
-        return String.format(Locale.US, "%.2f", records.stream().mapToDouble(Record::cost).sum());
+    private static Record createRecord(String typeOfPurchase) {
+        System.out.println("\nEnter purchase name:");
+        String purchaseName = getInput();
+        System.out.println("Enter its price:");
+        double price = Double.parseDouble(getInput());
+        return new Record(typeOfPurchase, purchaseName, currency, price);
     }
 
     private static String getCurrency() {
@@ -102,7 +139,16 @@ public class BudgetManager {
     }
 
     private static void printTotal() {
-        System.out.printf(Locale.US, "Total sum: " + getCurrency() + "" + getTotal() + "%n%n");
+        String total = String.format(Locale.US, "%.2f", records.stream().mapToDouble(Record::cost).sum());
+        System.out.printf(Locale.US, "Total sum: " + getCurrency() + "" + total + "%n%n");
     }
 
+    private static void printTotal(String typeOfPurchase) {
+        String total = String.format(Locale.US, "%.2f",
+                records.stream()
+                        .filter(record -> Objects.equals(record.typeOfPurchase(), typeOfPurchase))
+                        .mapToDouble(Record::cost)
+                        .sum());
+        System.out.printf(Locale.US, "Total sum: " + getCurrency() + "" + total + "%n%n");
+    }
 }

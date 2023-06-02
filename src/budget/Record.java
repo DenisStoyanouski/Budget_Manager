@@ -1,6 +1,6 @@
 package budget;
 
-record Record(String item, String currency, double cost) {
+record Record(String typeOfPurchase, String item, String currency, double cost) {
     @Override
     public String item() {
         return item;
