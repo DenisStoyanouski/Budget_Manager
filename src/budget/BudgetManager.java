@@ -23,11 +23,12 @@ public class BudgetManager {
                     3) Show list of purchases
                     4) Balance
                     0) Exit""";
-            System.out.println(menu);
+            System.out.println("\n" + menu);
+
             switch (getInput()) {
                 case "1" -> addIncome();
                 case "2" -> addPurchase();
-                case "3" -> printListOfPurchases();
+                case "3" -> showListOfPurchases();
                 case "4" -> printBalance();
                 case "0" -> {
                     System.out.println("\nBye!");
@@ -88,8 +89,12 @@ public class BudgetManager {
 
     }
 
-    private static void printListOfPurchases() {
+    private static void showListOfPurchases() {
         boolean back = false;
+        if (records.isEmpty()) {
+            System.out.println("\nThe purchase list is empty\n");
+            return;
+        }
         while(!back) {
             String menu = """
                 Choose the type of purchases
@@ -99,27 +104,35 @@ public class BudgetManager {
                 4) Other
                 5) All
                 6) Back""";
-            System.out.println(menu);
+            System.out.println("\n" + menu);
             int item = Integer.parseInt(getInput().trim());
-            if (records.isEmpty()) {
-                System.out.println("\nThe purchase list is empty\n");
-                break;
-            }
             switch (item) {
-                case 1, 2, 3, 4 -> {
-                    records.stream()
-                            .filter(record -> Objects.equals(record.typeOfPurchase(), typeOfPurchase[item]))
-                            .forEach(System.out::println);
-                    printTotal(typeOfPurchase[item]);
-                }
-                case 5 -> {
-                    records.forEach(record -> System.out.println(record.toString()));
-                    printTotal();
-                }
+                case 1, 2, 3, 4, 5 -> printListOfPurchases(typeOfPurchase[item]);
                 case 6 -> back = true;
                 default -> System.out.println("Enter number from menu!\n");
             }
         }
+    }
+
+    private static void printListOfPurchases(String typeOfPurchase) {
+        System.out.println("\n" + typeOfPurchase + ":");
+        List<Record> records = getListOfPurchases(typeOfPurchase);
+        if (!records.isEmpty()) {
+            records.forEach(System.out::println);
+            printTotal(typeOfPurchase);
+        } else {
+            System.out.println("The purchase list is empty!\n");
+        }
+
+    }
+
+    private static List<Record> getListOfPurchases(String typeOfPurchase) {
+        if ("All".equals(typeOfPurchase)) {
+            return records;
+        }
+        return records.stream()
+                .filter(record -> Objects.equals(record.typeOfPurchase(), typeOfPurchase))
+                .toList();
     }
 
     private static Record createRecord(String typeOfPurchase) {
@@ -138,17 +151,17 @@ public class BudgetManager {
         return scanner.nextLine();
     }
 
-    private static void printTotal() {
-        String total = String.format(Locale.US, "%.2f", records.stream().mapToDouble(Record::cost).sum());
-        System.out.printf(Locale.US, "Total sum: " + getCurrency() + "" + total + "%n%n");
-    }
-
     private static void printTotal(String typeOfPurchase) {
-        String total = String.format(Locale.US, "%.2f",
-                records.stream()
-                        .filter(record -> Objects.equals(record.typeOfPurchase(), typeOfPurchase))
-                        .mapToDouble(Record::cost)
-                        .sum());
+        String total = "";
+        if ("All".equals(typeOfPurchase)) {
+            total = String.format(Locale.US, "%.2f", records.stream().mapToDouble(Record::cost).sum());
+        } else {
+            total = String.format(Locale.US, "%.2f",
+                    records.stream()
+                            .filter(record -> Objects.equals(record.typeOfPurchase(), typeOfPurchase))
+                            .mapToDouble(Record::cost)
+                            .sum());
+        }
         System.out.printf(Locale.US, "Total sum: " + getCurrency() + "" + total + "%n%n");
     }
 }
