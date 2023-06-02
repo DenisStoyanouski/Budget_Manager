@@ -34,6 +34,7 @@ public class BudgetManager {
                     2) Add purchase
                     3) Show list of purchases
                     4) Balance
+                    5) Save
                     0) Exit""";
             System.out.println("\n" + menu);
 
@@ -42,6 +43,7 @@ public class BudgetManager {
                 case "2" -> addPurchase();
                 case "3" -> showListOfPurchases();
                 case "4" -> printBalance();
+                case "5" -> PurchasesSaver.saveRecords(RECORDS);
                 case "0" -> {
                     System.out.println("\nBye!");
                     System.exit(0);

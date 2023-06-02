@@ -18,6 +18,6 @@ record Record(String typeOfPurchase, String item, String currency, double cost) 
 
     @Override
     public String toString() {
-        return String.format("%s %s%.2f", item, currency, cost);
+        return String.format("%s %s %s%.2f",typeOfPurchase, item, currency, cost);
     }
 }
