@@ -4,8 +4,8 @@ import java.util.*;
 
 
 public class BudgetManager {
-    private final static Scanner scanner = new Scanner(System.in);
-    private final static String currency = "$";
+    private final static Scanner SCANNER = new Scanner(System.in);
+    private final static String CURRENCY = "$";
 
     private enum AddMenuItems {
         FOOD,
@@ -23,7 +23,7 @@ public class BudgetManager {
         ALL,
         BACK
     }
-    private final static List<Record> records = new ArrayList<>();
+    private final static List<Record> RECORDS = new ArrayList<>();
     private static Double balance = 0d;
 
     public static void start() {
@@ -74,7 +74,7 @@ public class BudgetManager {
                 default -> System.out.println("Enter number from menu!\n");
             }
             if (record != null) {
-                records.add(record);
+                RECORDS.add(record);
                 System.out.println("Purchase was added!\n");
                 changeBalance(record.cost());
             }
@@ -100,7 +100,7 @@ public class BudgetManager {
 
     private static void showListOfPurchases() {
         boolean back = false;
-        if (records.isEmpty()) {
+        if (RECORDS.isEmpty()) {
             System.out.println("\nThe purchase list is empty\n");
             return;
         }
@@ -134,9 +134,9 @@ public class BudgetManager {
 
     private static List<Record> getListOfPurchases(String typeOfPurchase) {
         if ("ALL".equals(typeOfPurchase)) {
-            return records;
+            return RECORDS;
         }
-        return records.stream()
+        return RECORDS.stream()
                 .filter(record -> Objects.equals(record.typeOfPurchase(), typeOfPurchase))
                 .toList();
     }
@@ -146,24 +146,24 @@ public class BudgetManager {
         String purchaseName = getInput();
         System.out.println("Enter its price:");
         double price = Double.parseDouble(getInput());
-        return new Record(typeOfPurchase, purchaseName, currency, price);
+        return new Record(typeOfPurchase, purchaseName, CURRENCY, price);
     }
 
     private static String getCurrency() {
-        return currency;
+        return CURRENCY;
     }
 
     private static String getInput() {
-        return scanner.nextLine();
+        return SCANNER.nextLine();
     }
 
     private static void printTotal(String typeOfPurchase) {
         String total;
         if ("ALL".equals(typeOfPurchase)) {
-            total = String.format(Locale.US, "%.2f", records.stream().mapToDouble(Record::cost).sum());
+            total = String.format(Locale.US, "%.2f", RECORDS.stream().mapToDouble(Record::cost).sum());
         } else {
             total = String.format(Locale.US, "%.2f",
-                    records.stream()
+                    RECORDS.stream()
                             .filter(record -> Objects.equals(record.typeOfPurchase(), typeOfPurchase))
                             .mapToDouble(Record::cost)
                             .sum());
