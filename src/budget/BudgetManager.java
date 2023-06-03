@@ -25,7 +25,7 @@ public class BudgetManager {
     }
 
     private static List<Record> RECORDS = new ArrayList<>();
-    private static Double balance = 0d;
+    private static double balance = 0d;
 
     public static void start() {
         while (true) {
@@ -45,8 +45,11 @@ public class BudgetManager {
                 case "2" -> addPurchase();
                 case "3" -> showListOfPurchases();
                 case "4" -> printBalance();
-                case "5" -> PurchasesSaver.saveRecords(RECORDS);
-                case "6" -> RECORDS = PurchasesLoader.loadRecords();
+                case "5" -> PurchasesSaver.saveBudget(balance, RECORDS);
+                case "6" -> {
+                    RECORDS = PurchasesLoader.loadRecords();
+                    balance = PurchasesLoader.getBalance();
+                }
                 case "0" -> {
                     System.out.println("\nBye!");
                     System.exit(0);
@@ -100,7 +103,7 @@ public class BudgetManager {
     }
 
     private static void printBalance() {
-        System.out.printf(Locale.US, "\nBalance: $%.2f\n\n", balance);
+        System.out.printf(Locale.US, "\nBalance: $%.2f\n", balance);
     }
 
     private static void showListOfPurchases() {
@@ -162,6 +165,10 @@ public class BudgetManager {
         return SCANNER.nextLine();
     }
 
+    private static double getAllTotal() {
+        return RECORDS.stream().mapToDouble(Record::cost).sum();
+    }
+
     private static void printTotal(String typeOfPurchase) {
         String total;
         if ("ALL".equals(typeOfPurchase)) {
@@ -173,6 +180,6 @@ public class BudgetManager {
                             .mapToDouble(Record::cost)
                             .sum());
         }
-        System.out.printf(Locale.US, "Total sum: " + getCurrency() + "" + total + "%n%n");
+        System.out.printf(Locale.US, "Total sum: " + getCurrency() + "" + total + "%n");
     }
 }

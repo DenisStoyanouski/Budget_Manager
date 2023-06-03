@@ -12,27 +12,40 @@ public class PurchasesLoader {
 
     static List<Record> records = new ArrayList<>();
 
+    static double balance;
+
     public static List<Record> loadRecords() {
         String[] source;
         try {
-            source = readFileAsString().split("(?<=\\$\\d?\\d\\.\\d\\d)");
+            source = readFileAsString().split("(?<=\\$\\d{1,}\\.\\d\\d)");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         for (String rec : source) {
             records.add(createRecord(rec.trim()));
         }
+        System.out.println("\nPurchases were loaded!");
         return records;
     }
 
     private static String readFileAsString() throws IOException {
-        return new String(Files.readAllBytes(Paths.get(filePath)));
+        String result = new String(Files.readAllBytes(Paths.get(filePath)));
+        String[] withBalance = result.split("(?<=\\d{1,}\\.\\d\\d)", 2);
+        if (withBalance[0].matches("\\d+([.,])\\d+")) {
+            balance = Double.parseDouble(withBalance[0].trim().replace(",", "."));
+            return withBalance[1];
+        }
+        return result;
+    }
+
+    public static double getBalance() {
+        return balance;
     }
 
     private static Record createRecord(String line) {
         String typeOfPurchases = line.substring(0, line.indexOf(" "));
-        String item = line.substring(line.indexOf(" ") + 1, line.indexOf("$") - 1);
-        double cost = Double.parseDouble(line.substring(line.indexOf("$") + 1).replace(",", "."));
+        String item = line.substring(line.indexOf(" ") + 1, line.lastIndexOf("$") - 1);
+        double cost = Double.parseDouble(line.substring(line.lastIndexOf("$") + 1).replace(",", "."));
         return new Record(typeOfPurchases, item, "$", cost);
     }
 }

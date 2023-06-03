@@ -8,8 +8,14 @@ import java.util.List;
 public class PurchasesSaver {
     private final static String filePath = "./" + File.separator + "purchases.txt";
 
-    public static void saveRecords(List<Record> records) {
+    public static void saveBudget(double balance, List<Record> records) {
+        saveRecords(balance, records);
+
+    }
+
+    private static void saveRecords(double balance, List<Record> records) {
         try (FileWriter fw = new FileWriter(filePath)) {
+            fw.write(String.valueOf(balance));
             records.forEach(record -> {
                 try {
                     fw.write(record.toFile());
@@ -21,6 +27,5 @@ public class PurchasesSaver {
         } catch (IOException e) {
             System.out.println("File not found!");
         }
-
     }
 }
