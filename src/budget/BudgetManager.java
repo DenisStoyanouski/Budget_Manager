@@ -23,7 +23,8 @@ public class BudgetManager {
         ALL,
         BACK
     }
-    private final static List<Record> RECORDS = new ArrayList<>();
+
+    private static List<Record> RECORDS = new ArrayList<>();
     private static Double balance = 0d;
 
     public static void start() {
@@ -35,6 +36,7 @@ public class BudgetManager {
                     3) Show list of purchases
                     4) Balance
                     5) Save
+                    6) Load
                     0) Exit""";
             System.out.println("\n" + menu);
 
@@ -44,6 +46,7 @@ public class BudgetManager {
                 case "3" -> showListOfPurchases();
                 case "4" -> printBalance();
                 case "5" -> PurchasesSaver.saveRecords(RECORDS);
+                case "6" -> RECORDS = PurchasesLoader.loadRecords();
                 case "0" -> {
                     System.out.println("\nBye!");
                     System.exit(0);

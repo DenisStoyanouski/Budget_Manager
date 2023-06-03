@@ -12,13 +12,13 @@ public class PurchasesSaver {
         try (FileWriter fw = new FileWriter(filePath)) {
             records.forEach(record -> {
                 try {
-                    fw.write(record.toString());
+                    fw.write(record.toFile());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             });
             System.out.println("Purchases were saved!");
-        }catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("File not found!");
         }
 

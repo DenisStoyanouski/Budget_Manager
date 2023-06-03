@@ -1,5 +1,7 @@
 package budget;
 
+import java.util.Locale;
+
 record Record(String typeOfPurchase, String item, String currency, double cost) {
     @Override
     public String item() {
@@ -18,6 +20,10 @@ record Record(String typeOfPurchase, String item, String currency, double cost) 
 
     @Override
     public String toString() {
-        return String.format("%s %s %s%.2f",typeOfPurchase, item, currency, cost);
+        return String.format(Locale.US, "%s %s%.2f", item, currency, cost);
+    }
+
+    public String toFile() {
+        return String.format(Locale.US, "%s %s %s%.2f", typeOfPurchase, item, currency, cost);
     }
 }
