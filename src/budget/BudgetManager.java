@@ -24,7 +24,7 @@ public class BudgetManager {
         BACK
     }
 
-    private static List<Record> RECORDS = new ArrayList<>();
+    private static List<Record> records = new ArrayList<>();
     private static double balance = 0d;
 
     public static void start() {
@@ -37,6 +37,7 @@ public class BudgetManager {
                     4) Balance
                     5) Save
                     6) Load
+                    7) Analyze (Sort)
                     0) Exit""";
             System.out.println("\n" + menu);
 
@@ -45,17 +46,46 @@ public class BudgetManager {
                 case "2" -> addPurchase();
                 case "3" -> showListOfPurchases();
                 case "4" -> printBalance();
-                case "5" -> PurchasesSaver.saveBudget(balance, RECORDS);
+                case "5" -> PurchasesSaver.saveBudget(balance, records);
                 case "6" -> {
-                    RECORDS = PurchasesLoader.loadRecords();
+                    records = PurchasesLoader.loadRecords();
                     balance = PurchasesLoader.getBalance();
                 }
+                case "7" -> analyze();
                 case "0" -> {
                     System.out.println("\nBye!");
                     System.exit(0);
                 }
             }
         }
+    }
+
+    private static void analyze() {
+        boolean back = false;
+        while (!back) {
+            Sorter sorter = new Sorter();
+            String sorterMenu = """
+                How do you want to sort?
+                1) Sort all purchases
+                2) Sort by type
+                3) Sort certain type
+                4) Back
+                """;
+            System.out.println(sorterMenu);
+            switch (getInput().trim()) {
+                case "1" -> {
+                    sorter.setMethod(new AllPurchasesMethod());
+                    sorter.sort();
+                }
+                case "2" -> sorter.setMethod(new ByTypeMethod());
+                case "3" -> sorter.setMethod(new CertainTypeMethod());
+                case "4" -> back = true;
+            }
+        }
+    }
+
+    public static List<Record> getRecords() {
+        return records;
     }
 
     private static void addIncome() {
@@ -82,7 +112,7 @@ public class BudgetManager {
                 default -> System.out.println("Enter number from menu!\n");
             }
             if (record != null) {
-                RECORDS.add(record);
+                records.add(record);
                 System.out.println("Purchase was added!\n");
                 changeBalance(record.cost());
             }
@@ -108,7 +138,7 @@ public class BudgetManager {
 
     private static void showListOfPurchases() {
         boolean back = false;
-        if (RECORDS.isEmpty()) {
+        if (records.isEmpty()) {
             System.out.println("\nThe purchase list is empty\n");
             return;
         }
@@ -116,7 +146,7 @@ public class BudgetManager {
             printShowMenu();
             int item = Integer.parseInt(getInput().trim());
             switch (item) {
-                case 1, 2, 3, 4, 5 -> printListOfPurchases(ShowMenuItems.values()[item - 1].name());
+                case 1, 2, 3, 4, 5 -> printListOfPurchases(ShowMenuItems.values()[item - 1].name(), records);
                 case 6 -> back = true;
                 default -> System.out.println("Enter a number from menu!\n");
             }
@@ -129,22 +159,22 @@ public class BudgetManager {
                 .forEach(value -> System.out.println((value.ordinal() + 1) + ") " + value.name()));
     }
 
-    private static void printListOfPurchases(String typeOfPurchase) {
-        System.out.println("\n" + typeOfPurchase + ":");
-        List<Record> records = getListOfPurchases(typeOfPurchase);
-        if (!records.isEmpty()) {
-            records.forEach(System.out::println);
-            printTotal(typeOfPurchase);
+    static void printListOfPurchases(String typeOfPurchase, List<Record> recordList) {
+        List<Record> recordsOfType = getListOfPurchases(typeOfPurchase, recordList);
+        if (!recordsOfType.isEmpty()) {
+            System.out.println("\n" + typeOfPurchase + ":");
+            recordsOfType.forEach(System.out::println);
+            printTotal(typeOfPurchase, recordList);
         } else {
             System.out.println("The purchase list is empty!\n");
         }
     }
 
-    private static List<Record> getListOfPurchases(String typeOfPurchase) {
+    private static List<Record> getListOfPurchases(String typeOfPurchase, List<Record> recordList) {
         if ("ALL".equals(typeOfPurchase)) {
-            return RECORDS;
+            return recordList;
         }
-        return RECORDS.stream()
+        return recordList.stream()
                 .filter(record -> Objects.equals(record.typeOfPurchase(), typeOfPurchase))
                 .toList();
     }
@@ -166,16 +196,16 @@ public class BudgetManager {
     }
 
     private static double getAllTotal() {
-        return RECORDS.stream().mapToDouble(Record::cost).sum();
+        return records.stream().mapToDouble(Record::cost).sum();
     }
 
-    private static void printTotal(String typeOfPurchase) {
+    static void printTotal(String typeOfPurchase, List<Record> currentRecords) {
         String total;
         if ("ALL".equals(typeOfPurchase)) {
-            total = String.format(Locale.US, "%.2f", RECORDS.stream().mapToDouble(Record::cost).sum());
+            total = String.format(Locale.US, "%.2f", currentRecords.stream().mapToDouble(Record::cost).sum());
         } else {
             total = String.format(Locale.US, "%.2f",
-                    RECORDS.stream()
+                    currentRecords.stream()
                             .filter(record -> Objects.equals(record.typeOfPurchase(), typeOfPurchase))
                             .mapToDouble(Record::cost)
                             .sum());
