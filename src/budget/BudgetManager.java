@@ -68,7 +68,10 @@ public class BudgetManager {
                     sorter.setMethod(new AllPurchasesMethod());
                     sorter.sort();
                 }
-                case "2" -> sorter.setMethod(new ByTypeMethod());
+                case "2" -> {
+                    sorter.setMethod(new ByTypeMethod());
+                    sorter.sort();
+                }
                 case "3" -> sorter.setMethod(new CertainTypeMethod());
                 case "4" -> back = true;
                 default -> System.out.println("Only number from menu are available!");
