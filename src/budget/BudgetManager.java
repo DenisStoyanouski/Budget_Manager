@@ -56,6 +56,7 @@ public class BudgetManager {
                     System.out.println("\nBye!");
                     System.exit(0);
                 }
+                default -> System.out.println("Only number from menu are available!");
             }
         }
     }
@@ -80,6 +81,7 @@ public class BudgetManager {
                 case "2" -> sorter.setMethod(new ByTypeMethod());
                 case "3" -> sorter.setMethod(new CertainTypeMethod());
                 case "4" -> back = true;
+                default -> System.out.println("Only number from menu are available!");
             }
         }
     }
@@ -105,16 +107,20 @@ public class BudgetManager {
         while (!back) {
             printAddMenu();
             Record record = null;
-            int item = Integer.parseInt(getInput().trim());
-            switch (item) {
-                case 1, 2, 3, 4 -> record = createRecord(AddMenuItems.values()[item - 1].name());
-                case 5 -> back = true;
-                default -> System.out.println("Enter number from menu!\n");
-            }
-            if (record != null) {
-                records.add(record);
-                System.out.println("Purchase was added!\n");
-                changeBalance(record.cost());
+            try {
+                int item = Integer.parseInt(getInput().trim());
+                switch (item) {
+                    case 1, 2, 3, 4 -> record = createRecord(AddMenuItems.values()[item - 1].name());
+                    case 5 -> back = true;
+                    default -> throw new NumberFormatException();
+                }
+                if (record != null) {
+                    records.add(record);
+                    System.out.println("Purchase was added!\n");
+                    changeBalance(record.cost());
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Enter number from menu!");
             }
         }
     }
@@ -144,11 +150,15 @@ public class BudgetManager {
         }
         while (!back) {
             printShowMenu();
-            int item = Integer.parseInt(getInput().trim());
-            switch (item) {
-                case 1, 2, 3, 4, 5 -> printListOfPurchases(ShowMenuItems.values()[item - 1].name(), records);
-                case 6 -> back = true;
-                default -> System.out.println("Enter a number from menu!\n");
+            try {
+                int item = Integer.parseInt(getInput().trim());
+                switch (item) {
+                    case 1, 2, 3, 4, 5 -> printListOfPurchases(ShowMenuItems.values()[item - 1].name(), records);
+                    case 6 -> back = true;
+                    default -> throw new NumberFormatException();
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Enter a number from menu!");
             }
         }
     }
