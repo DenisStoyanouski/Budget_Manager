@@ -7,22 +7,11 @@ public class BudgetManager {
     private final static Scanner SCANNER = new Scanner(System.in);
     private final static String CURRENCY = "$";
 
-    private enum AddMenuItems {
+    private enum Types {
         FOOD,
         CLOTHES,
         ENTERTAINMENT,
-        OTHER,
-        BACK
-    }
-
-    // TODO: 04.06.2023 try to solve problem with using single Enum for all cases
-    private enum ShowMenuItems {
-        FOOD,
-        CLOTHES,
-        ENTERTAINMENT,
-        OTHER,
-        ALL,
-        BACK
+        OTHER
     }
 
     private static List<Record> records = new ArrayList<>();
@@ -111,7 +100,7 @@ public class BudgetManager {
             try {
                 int item = Integer.parseInt(getInput());
                 switch (item) {
-                    case 1, 2, 3, 4 -> record = createRecord(AddMenuItems.values()[item - 1].name());
+                    case 1, 2, 3, 4 -> record = createRecord(Types.values()[item - 1].name());
                     case 5 -> back = true;
                     default -> throw new NumberFormatException();
                 }
@@ -128,8 +117,10 @@ public class BudgetManager {
 
     private static void printAddMenu() {
         System.out.println("\nChoose the type of purchase");
-        Arrays.stream(AddMenuItems.values())
+        Arrays.stream(Types.values())
                 .forEach(value -> System.out.println((value.ordinal() + 1) + ") " + value.name()));
+        System.out.println(Types.values().length + 1 + ") Back");
+
     }
 
     private static void changeBalance(double price) {
@@ -154,7 +145,8 @@ public class BudgetManager {
             try {
                 int item = Integer.parseInt(getInput());
                 switch (item) {
-                    case 1, 2, 3, 4, 5 -> printListOfPurchases(ShowMenuItems.values()[item - 1].name(), records);
+                    case 1, 2, 3, 4 -> printListOfPurchases(Types.values()[item - 1].name(), records);
+                    case 5 -> printListOfPurchases("ALL", records);
                     case 6 -> back = true;
                     default -> throw new NumberFormatException();
                 }
@@ -166,8 +158,10 @@ public class BudgetManager {
 
     private static void printShowMenu() {
         System.out.println("\nChoose the type of purchase");
-        Arrays.stream(ShowMenuItems.values())
+        Arrays.stream(Types.values())
                 .forEach(value -> System.out.println((value.ordinal() + 1) + ") " + value.name()));
+        System.out.println(Types.values().length + 1 + ") ALL");
+        System.out.println(Types.values().length + 2 + ") Back");
     }
 
     static void printListOfPurchases(String typeOfPurchase, List<Record> recordList) {
