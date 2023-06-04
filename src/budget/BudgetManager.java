@@ -15,6 +15,7 @@ public class BudgetManager {
         BACK
     }
 
+    // TODO: 04.06.2023 try to solve problem with using single Enum for all cases
     private enum ShowMenuItems {
         FOOD,
         CLOTHES,
@@ -66,14 +67,14 @@ public class BudgetManager {
         while (!back) {
             Sorter sorter = new Sorter();
             String sorterMenu = """
-                How do you want to sort?
-                1) Sort all purchases
-                2) Sort by type
-                3) Sort certain type
-                4) Back
-                """;
+                    How do you want to sort?
+                    1) Sort all purchases
+                    2) Sort by type
+                    3) Sort certain type
+                    4) Back
+                    """;
             System.out.println(sorterMenu);
-            switch (getInput().trim()) {
+            switch (getInput()) {
                 case "1" -> {
                     sorter.setMethod(new AllPurchasesMethod());
                     sorter.sort();
@@ -108,7 +109,7 @@ public class BudgetManager {
             printAddMenu();
             Record record = null;
             try {
-                int item = Integer.parseInt(getInput().trim());
+                int item = Integer.parseInt(getInput());
                 switch (item) {
                     case 1, 2, 3, 4 -> record = createRecord(AddMenuItems.values()[item - 1].name());
                     case 5 -> back = true;
@@ -151,7 +152,7 @@ public class BudgetManager {
         while (!back) {
             printShowMenu();
             try {
-                int item = Integer.parseInt(getInput().trim());
+                int item = Integer.parseInt(getInput());
                 switch (item) {
                     case 1, 2, 3, 4, 5 -> printListOfPurchases(ShowMenuItems.values()[item - 1].name(), records);
                     case 6 -> back = true;
@@ -190,10 +191,18 @@ public class BudgetManager {
     }
 
     private static Record createRecord(String typeOfPurchase) {
+        String purchaseName;
+        double price;
         System.out.println("\nEnter purchase name:");
-        String purchaseName = getInput();
+        purchaseName = getInput();
         System.out.println("Enter its price:");
-        double price = Double.parseDouble(getInput());
+        try {
+            price = Double.parseDouble(getInput().replace(",", "."));
+            System.out.println(price);
+        } catch (NullPointerException | NumberFormatException e) {
+            System.out.println("Wrong price format. Use number and . or , decimal separators");
+            return createRecord(typeOfPurchase);
+        }
         return new Record(typeOfPurchase, purchaseName, CURRENCY, price);
     }
 
@@ -202,7 +211,7 @@ public class BudgetManager {
     }
 
     private static String getInput() {
-        return SCANNER.nextLine();
+        return SCANNER.nextLine().strip();
     }
 
     private static double getAllTotal() {
