@@ -7,7 +7,7 @@ public class BudgetManager {
     private final static Scanner SCANNER = new Scanner(System.in);
     private final static String CURRENCY = "$";
 
-    private enum Types {
+    enum Types {
         FOOD,
         CLOTHES,
         ENTERTAINMENT,
@@ -204,7 +204,7 @@ public class BudgetManager {
         return CURRENCY;
     }
 
-    private static String getInput() {
+    static String getInput() {
         return SCANNER.nextLine().strip();
     }
 
