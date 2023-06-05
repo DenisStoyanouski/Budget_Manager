@@ -12,7 +12,11 @@ public class CertainTypeMethod implements SortMethod{
     @Override
     public void sort() {
         String type = getType();
-        List<Record> recordList= new java.util.ArrayList<>(BudgetManager.getRecords().stream().sorted(Comparator.comparing(Record::cost)).toList());
+        List<Record> recordList= new java.util.ArrayList<>(BudgetManager.getRecords().stream()
+                .sorted(Comparator
+                        .comparingDouble(Record::cost)
+                        .thenComparing(Record::item))
+                .toList());
         Collections.reverse(recordList);
         printListOfPurchases(type, recordList);
     }

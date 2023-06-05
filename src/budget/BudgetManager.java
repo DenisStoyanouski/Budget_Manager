@@ -62,7 +62,7 @@ public class BudgetManager {
                     3) Sort certain type
                     4) Back
                     """;
-            System.out.println(sorterMenu);
+            System.out.println("\n" + sorterMenu);
             switch (getInput()) {
                 case "1" -> {
                     sorter.setMethod(new AllPurchasesMethod());
@@ -72,7 +72,10 @@ public class BudgetManager {
                     sorter.setMethod(new ByTypeMethod());
                     sorter.sort();
                 }
-                case "3" -> sorter.setMethod(new CertainTypeMethod());
+                case "3" -> {
+                    sorter.setMethod(new CertainTypeMethod());
+                    sorter.sort();
+                }
                 case "4" -> back = true;
                 default -> System.out.println("Only number from menu are available!");
             }
@@ -174,7 +177,7 @@ public class BudgetManager {
             recordsOfType.forEach(System.out::println);
             printTotal(typeOfPurchase, recordList);
         } else {
-            System.out.println("The purchase list is empty!\n");
+            System.out.println("\nThe purchase list is empty!\n");
         }
     }
 
